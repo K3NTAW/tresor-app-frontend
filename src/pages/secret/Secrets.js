@@ -51,7 +51,13 @@ const Secrets = ({loginValues}) => {
                                 <td>{secret.id}</td>
                                 <td>{secret.userId}</td>
                                 <td>
-                                    <pre>{JSON.stringify(secret.content, null, 2)}</pre>
+                                    <div style={{textAlign: 'left'}}>
+                                        <pre style={{margin: 0, background: '#f6f8fa', borderRadius: 4, padding: 8}}>
+                                            {Object.entries(secret.content).map(([key, value]) => (
+                                                <div key={key}><b>{key}:</b> {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}</div>
+                                            ))}
+                                        </pre>
+                                    </div>
                                 </td>
                             </tr>
                         ))

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 
 /**
@@ -85,6 +85,9 @@ function LoginUser({loginValues, setLoginValues}) {
                     </aside>
                 </section>
                 <button type="submit">Login</button>
+                <div style={{ marginTop: '10px' }}>
+                    <Link to="/forgot-password">Forgot Password?</Link>
+                </div>
             </form>
         </div>
     );
