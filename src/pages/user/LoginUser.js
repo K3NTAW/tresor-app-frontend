@@ -5,24 +5,24 @@ import { useState } from 'react';
  * LoginUser
  * @author Peter Rutschmann
  */
-function LoginUser({loginValues, setLoginValues}) {
+function LoginUser({ setLoginValues }) {
     const navigate = useNavigate();
+    const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [errorMessage, setErrorMessage] = useState('');
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting login data:', loginValues);
-        
+        setErrorMessage('');
         try {
-            console.log("Password: ", loginValues.password);
+            console.log("Password: ", credentials.password);
             const response = await fetch('http://localhost:8080/api/users/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: loginValues.email,
-                    password: loginValues.password
+                    email: credentials.email,
+                    password: credentials.password
                 })
             });
             console.log('Response status:', response.status);
@@ -50,44 +50,40 @@ function LoginUser({loginValues, setLoginValues}) {
     };
     
     return (
-        <div>
-            <h2>Login user</h2>
+        <div className="form-container">
+            <h2>Login</h2>
             {errorMessage && (
-                <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+                <div className="message error">
                     {errorMessage}
                 </div>
             )}
             <form onSubmit={handleSubmit}>
-                <section>
-                    <aside>
-                        <div>
-                            <label>Email:</label>
-                            <input
-                                type="email"
-                                value={loginValues.email}
-                                onChange={(e) =>
-                                    setLoginValues(prevValues => ({...prevValues, email: e.target.value}))}
-                                required
-                                placeholder="Please enter your email *"
-                            />
-                        </div>
-                        <div>
-                            <label>Password:</label>
-                            <input
-                                type="password"
-                                value={loginValues.password}
-                                onChange={(e) =>
-                                    setLoginValues(prevValues => ({...prevValues, password: e.target.value}))}
-                                required
-                                placeholder="Please enter your password *"
-                            />
-                        </div>
-                    </aside>
-                </section>
-                <button type="submit">Login</button>
-                <div style={{ marginTop: '10px' }}>
-                    <Link to="/forgot-password">Forgot Password?</Link>
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        value={credentials.email}
+                        onChange={(e) =>
+                            setCredentials(prevValues => ({...prevValues, email: e.target.value}))}
+                        required
+                        placeholder="Enter your email"
+                    />
                 </div>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        value={credentials.password}
+                        onChange={(e) =>
+                            setCredentials(prevValues => ({...prevValues, password: e.target.value}))}
+                        required
+                        placeholder="Enter your password"
+                    />
+                </div>
+                <button type="submit" className="btn">Login</button>
+                <Link to="/forgot-password" className="form-link">Forgot Password?</Link>
             </form>
         </div>
     );

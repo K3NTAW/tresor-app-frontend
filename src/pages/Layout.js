@@ -1,57 +1,64 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import './../css/Navbar.css';
 
 /**
  * Layout
  * @author Peter Rutschmann
  */
-const Layout = ({loginValues}) => {
+const Layout = ({ loginValues, setLoginValues }) => {
+    const navigate = useNavigate();
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const userEmail = localStorage.getItem('userEmail');
+
+    const handleLogout = () => {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('isLoggedIn');
+        if(setLoginValues) {
+            setLoginValues({ email: "", password: "" });
+        }
+        navigate('/user/login');
+    };
+
     return (
         <>
-            <nav>
-                <h1>The secret tresor application</h1>
-                <p>{loginValues.email === '' ? 'No user logged in' : 'user:' + loginValues.email}</p>
-                <ul>
-                    <li><a href="/">Secrets</a>
-                    <ul>
-                        <li><Link to="/secret/secrets">my secrets</Link></li>
-                        <li><Link to="/secret/newcredential">new credential</Link></li>
-                        <li><Link to="/secret/newcreditcard">new credit-card</Link></li>
-                        <li><Link to="/secret/newnote">new note</Link></li>
-                    </ul>
-                    </li>
-                    <li><a href="/">User</a>
-                    <ul>
-                        <li><Link to="/user/login">login</Link></li>
-                        <li><Link to="/user/register">register</Link></li>
-                    </ul>
-                    </li>
-                    <li><a href="/">Admin</a>
-                        <ul>
-                            <li><Link to="/user/users">All users</Link></li>
-                            <li>Add user</li>
-                            <li><Link to="/user/users/:id">Edit user</Link></li>
-                            <li>All secrets</li>
+            <nav className="navbar">
+                <Link to="/" className="navbar-brand">Tresor</Link>
+                <ul className="navbar-links">
+                    <li>
+                        <Link to="/secret/secrets">Secrets</Link>
+                        <ul className="dropdown-menu">
+                            <li><Link to="/secret/secrets">My Secrets</Link></li>
+                            <li><Link to="/secret/newcredential">New Credential</Link></li>
+                            <li><Link to="/secret/newcreditcard">New Credit-Card</Link></li>
+                            <li><Link to="/secret/newnote">New Note</Link></li>
                         </ul>
                     </li>
                     <li>
-                        <Link to="/">About</Link>
+                        <Link to="/user/users">Users</Link>
+                         <ul className="dropdown-menu">
+                            <li><Link to="/user/users">All Users</Link></li>
+                        </ul>
                     </li>
+                    <li><Link to="/about">About</Link></li>
+                    {isLoggedIn ? (
+                        <>
+                            <li><span className="user-info">{userEmail}</span></li>
+                            <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+                        </>
+                    ) : (
+                        <>
+                          <li><Link to="/user/login">Login</Link></li>
+                          <li><Link to="/user/register">Register</Link></li>
+                        </>
+                    )}
                 </ul>
             </nav>
-            <hr/>
-            <div style={{
-                minHeight: '80vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-                marginTop: 0,
-                paddingTop: 0
-            }}>
-                <Outlet/>
-            </div>
+            <main style={{ paddingTop: '80px', display: 'flex', justifyContent: 'center' }}>
+                <Outlet />
+            </main>
         </>
-    )
+    );
 };
 
 export default Layout;

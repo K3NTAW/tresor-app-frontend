@@ -43,7 +43,7 @@ function RegisterUser({loginValues, setLoginValues}) {
             return;
         }
         try {
-            await postUser(credentials);
+            await postUser(credentials, recaptchaToken);
             setLoginValues({userName: credentials.email, password: credentials.password});
             setCredentials(initialState);
             setRecaptchaToken(null);
@@ -98,7 +98,7 @@ function RegisterUser({loginValues, setLoginValues}) {
                         <div>
                             <label>Password:</label>
                             <input
-                                type="text"
+                                type="password"
                                 value={credentials.password}
                                 onChange={(e) =>
                                     setCredentials(prevValues => ({...prevValues, password: e.target.value}))}
@@ -109,7 +109,7 @@ function RegisterUser({loginValues, setLoginValues}) {
                         <div>
                             <label>Password confirmation:</label>
                             <input
-                                type="text"
+                                type="password"
                                 value={credentials.passwordConfirmation}
                                 onChange={(e) =>
                                     setCredentials(prevValues => ({...prevValues, passwordConfirmation: e.target.value}))}

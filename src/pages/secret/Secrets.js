@@ -1,4 +1,5 @@
 import '../../App.css';
+import '../../css/Secrets.css';
 import React, {useEffect, useState} from 'react';
 import {getSecretsforUser} from "../../comunication/FetchSecrets";
 
@@ -31,45 +32,42 @@ const Secrets = ({loginValues}) => {
     }, [loginValues]);
 
     return (
-        <>
-            <h1>my secrets</h1>
-            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
-             <form>
-                <h2>secrets</h2>
-                <table border="1">
-                    <thead>
-                    <tr>
-                        <th>secret id</th>
-                        <th>user id</th>
-                        <th>content</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {secrets?.length > 0 ? (
-                        secrets.map(secret => (
-                            <tr key={secret.id}>
-                                <td>{secret.id}</td>
-                                <td>{secret.userId}</td>
-                                <td>
-                                    <div style={{textAlign: 'left'}}>
-                                        <pre style={{margin: 0, background: '#f6f8fa', borderRadius: 4, padding: 8}}>
-                                            {Object.entries(secret.content).map(([key, value]) => (
-                                                <div key={key}><b>{key}:</b> {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}</div>
-                                            ))}
-                                        </pre>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="3">No secrets available</td>
+        <div className="secrets-container">
+            <h1>My Secrets</h1>
+            {errorMessage && <p className="message error">{errorMessage}</p>}
+            <table className="secrets-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Content</th>
+                </tr>
+                </thead>
+                <tbody>
+                {secrets?.length > 0 ? (
+                    secrets.map(secret => (
+                        <tr key={secret.id}>
+                            <td>{secret.id}</td>
+                            <td>{secret.userId}</td>
+                            <td>
+                                <div className="secret-content">
+                                    {Object.entries(secret.content).map(([key, value]) => (
+                                        <div key={key}>
+                                            <span className="secret-content-key">{key}:</span> {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+                                        </div>
+                                    ))}
+                                </div>
+                            </td>
                         </tr>
-                    )}
-                    </tbody>
-                </table>
-            </form>
-        </>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="3">No secrets available</td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
+        </div>
     );
 };
 
