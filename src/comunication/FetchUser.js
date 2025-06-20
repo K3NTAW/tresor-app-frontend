@@ -3,70 +3,34 @@
  * @author Peter Rutschmann
  */
 
+import api from './axiosConfig';
 
-export const getUsers = async () => {
-    const protocol = process.env.REACT_APP_API_PROTOCOL; // "http"
-    const host = process.env.REACT_APP_API_HOST; // "localhost"
-    const port = process.env.REACT_APP_API_PORT; // "8080"
-    const path = process.env.REACT_APP_API_PATH; // "/api"
-    const portPart = port ? `:${port}` : ''; // port is optional
-    const API_URL = `${protocol}://${host}${portPart}${path}`;
-
+export const getUsers = async (loginValues) => {
     try {
-        const response = await fetch(`${API_URL}/users`, {
-            method: 'Get',
+        const response = await api.get('/users', {
             headers: {
-                'Accept': 'application/json'
+                'Authorization': `Bearer ${loginValues.token}`
             }
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Server response failed.');
-        }
-
-        const data = await response.json();
-        console.log('User successfully got:', data);
-        return data;
+        console.log('Users successfully retrieved:', response.data);
+        return response.data;
     } catch (error) {
-        console.error('Failed to get user:', error.message);
-        throw new Error('Failed to get user. ' || error.message);
+        console.error('Failed to get users:', error.response?.data?.message || error.message);
+        throw new Error('Failed to get users. ' + (error.response?.data?.message || error.message));
     }
 }
 
 export const postUser = async (content, recaptchaToken) => {
-    const protocol = process.env.REACT_APP_API_PROTOCOL; // "http"
-    const host = process.env.REACT_APP_API_HOST; // "localhost"
-    const port = process.env.REACT_APP_API_PORT; // "8080"
-    const path = process.env.REACT_APP_API_PATH; // "/api"
-    const portPart = port ? `:${port}` : ''; // port is optional
-    const API_URL = `${protocol}://${host}${portPart}${path}`;
-
     try {
-        const response = await fetch(`${API_URL}/users`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                firstName: `${content.firstName}`,
-                lastName: `${content.lastName}`,
-                email: `${content.email}`,
-                password: `${content.password}`,
-                passwordConfirmation: `${content.passwordConfirmation}`,
-                recaptchaToken: recaptchaToken
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Server response failed.');
-        }
-        const data = await response.json();
-        console.log('User successfully posted:', data);
-        return data;
+        const payload = {
+            ...content,
+            recaptchaToken: recaptchaToken
+        };
+        const response = await api.post('/auth/register', payload);
+        console.log('User successfully posted:', response.data);
+        return response.data;
     } catch (error) {
-        console.error('Failed to post user:', error.message);
-        throw new Error('Failed to save user. ' || error.message);
+        console.error('Failed to post user:', error.response?.data?.message || error.message);
+        throw new Error('Failed to save user. ' + (error.response?.data?.message || error.message));
     }
 };

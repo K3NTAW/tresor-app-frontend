@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
+import api from '../../comunication/axiosConfig';
 
 /**
  * LoginUser
@@ -14,38 +15,29 @@ function LoginUser({ setLoginValues }) {
         e.preventDefault();
         setErrorMessage('');
         try {
-            console.log("Password: ", credentials.password);
-            const response = await fetch('http://localhost:8080/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: credentials.email,
-                    password: credentials.password
-                })
+            const response = await api.post('/auth/login', {
+                email: credentials.email,
+                password: credentials.password
             });
-            console.log('Response status:', response.status);
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                console.log('Login successful:', data);
-                
-                // Store user data in localStorage or sessionStorage for persistence
-                localStorage.setItem('userId', data.userId);
-                localStorage.setItem('userEmail', data.email);
-                localStorage.setItem('isLoggedIn', 'true');
+
+            if (response.data.jwt) {
+                console.log('Login successful');
+                const newLoginValues = {
+                    email: credentials.email,
+                    password: credentials.password,
+                    token: response.data.jwt
+                };
+                setLoginValues(newLoginValues);
                 
                 // Navigate to home page or dashboard
                 navigate('/');
             } else {
-                console.error('Login failed:', data);
-                setErrorMessage(data.message || 'Login failed. Please check your credentials.');
+                console.error('Login failed: No JWT token received');
+                setErrorMessage('Login failed. Please check your credentials.');
             }
         } catch (error) {
-            console.error('Error during login:', error);
-            setErrorMessage('An error occurred during login. Please try again.');
+            console.error('Error during login:', error.response?.data?.message || error.message);
+            setErrorMessage(error.response?.data?.message || 'An error occurred during login. Please try again.');
         }
     };
     

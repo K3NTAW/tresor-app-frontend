@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../../comunication/axiosConfig';
 
 function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -11,25 +12,11 @@ function ForgotPassword() {
         setIsError(false);
 
         try {
-            const response = await fetch('http://localhost:8080/api/users/forgot-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setMessage(data.message);
-                setIsError(false);
-            } else {
-                setMessage(data.message || 'Error sending password reset email.');
-                setIsError(true);
-            }
+            const response = await api.post('/auth/forgot-password', { email });
+            setMessage(response.data);
+            setIsError(false);
         } catch (error) {
-            setMessage('An error occurred. Please try again.');
+            setMessage(error.response?.data || 'An error occurred. Please try again.');
             setIsError(true);
         }
     };

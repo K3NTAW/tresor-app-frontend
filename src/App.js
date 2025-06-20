@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import './App.css';
 import './css/mvp.css';
@@ -20,18 +20,32 @@ import ResetPassword from "./pages/user/ResetPassword";
  * @author Peter Rutschmann
  */
 function App() {
-    const [loginValues, setLoginValues] = useState({
-        email: "",
-        password: "",
-    });
+    const [loginValues, setLoginValues] = useState({ email: "", password: "", token: null });
+
+    useEffect(() => {
+        const saved = sessionStorage.getItem("loginValues");
+        if (saved) {
+            setLoginValues(JSON.parse(saved));
+        }
+    }, []);
+
+    const handleSetLogin = (values) => {
+        if (values && values.email) {
+            sessionStorage.setItem("loginValues", JSON.stringify(values));
+        } else {
+            sessionStorage.removeItem("loginValues");
+        }
+        setLoginValues(values);
+    }
+
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Layout loginValues={loginValues}/>}>
+                <Route path="/" element={<Layout loginValues={loginValues} setLoginValues={handleSetLogin} />}>
                     <Route index element={<Home/>}/>
                     <Route path="/user/users" element={<Users loginValues={loginValues}/>}/>
-                    <Route path="/user/login" element={<LoginUser setLoginValues={setLoginValues}/>}/>
-                    <Route path="/user/register" element={<RegisterUser setLoginValues={setLoginValues}/>}/>
+                    <Route path="/user/login" element={<LoginUser setLoginValues={handleSetLogin}/>}/>
+                    <Route path="/user/register" element={<RegisterUser setLoginValues={handleSetLogin}/>}/>
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/secret/secrets" element={<Secrets loginValues={loginValues}/>}/>

@@ -12,13 +12,15 @@ const Users = ({loginValues}) => {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            try {
-                const users = await getUsers();
-                console.log(users);
-                setUsers(users);
-            } catch (error) {
-                console.error('Failed to fetch to server:', error.message);
-                setErrorMessage(error.message);
+            if (loginValues && loginValues.token) {
+                try {
+                    const users = await getUsers(loginValues);
+                    console.log(users);
+                    setUsers(users);
+                } catch (error) {
+                    console.error('Failed to fetch to server:', error.message);
+                    setErrorMessage(error.message);
+                }
             }
         };
         fetchUsers();

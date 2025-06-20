@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import api from '../../comunication/axiosConfig';
 
 function ResetPassword() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
-    const [searchParams] = useSearchParams();
+    const [token, setToken] = useState(null);
+    const location = useLocation();
     const navigate = useNavigate();
-    const token = searchParams.get('token');
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tokenFromParams = params.get('token');
+        setToken(tokenFromParams);
+    }, [location]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,26 +29,12 @@ function ResetPassword() {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/users/reset-password?token=${token}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ newPassword: password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setMessage(data.message);
-                setIsError(false);
-                setTimeout(() => navigate('/user/login'), 3000);
-            } else {
-                setMessage(data.message || 'Error resetting password.');
-                setIsError(true);
-            }
+            const response = await api.post(`/auth/reset-password?token=${token}`, { newPassword: password });
+            setMessage(response.data);
+            setIsError(false);
+            setTimeout(() => navigate('/user/login'), 3000);
         } catch (error) {
-            setMessage('An error occurred. Please try again.');
+            setMessage(error.response?.data || 'An error occurred. Please try again.');
             setIsError(true);
         }
     };

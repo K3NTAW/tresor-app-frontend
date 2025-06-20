@@ -63,13 +63,14 @@ export const getSecretsforUser = async (loginValues) => {
         
         console.log("Sending request body for getSecrets:", {
             email: requestBody.email,
-            // Not showing password for security
+            encryptPassword: requestBody.encryptPassword // Use login password for consistency
         });
         
         const response = await fetch(`${API_URL}/secrets/byemail`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${loginValues.token}`
             },
             body: JSON.stringify(requestBody)
         });

@@ -7,15 +7,13 @@ import './../css/Navbar.css';
  */
 const Layout = ({ loginValues, setLoginValues }) => {
     const navigate = useNavigate();
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const userEmail = localStorage.getItem('userEmail');
+    const isLoggedIn = loginValues && loginValues.email;
+    const userEmail = isLoggedIn ? loginValues.email : null;
 
     const handleLogout = () => {
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('loginValues');
         if(setLoginValues) {
-            setLoginValues({ email: "", password: "" });
+            setLoginValues({ email: "", password: "", token: null });
         }
         navigate('/user/login');
     };
